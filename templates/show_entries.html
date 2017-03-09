@@ -1,0 +1,24 @@
+{% extends "layout.html" %}
+{% block body %}
+    {% if session.logged_in %}
+        <form role="form" action="{{ url_for('article.add_entry')}}" method="post">
+            <div class="form-group">
+                <label for="title">标题</label>
+                <input type="text" class="form-control" id="title" name="title" placeholder="请输入文章标题">
+            </div>
+            <div class="form-group">
+                <label for="text">内容</label>
+                <input type="text" class="form-control" id="text" name="text" placeholder="请输入文章内容">
+            </div>
+            <button type="submit" class="btn btn-default">提交</button>
+        </form>
+    {% endif %}
+    <!--<ul class="list-group">-->
+        <!--{% for entry in entries %}-->
+           <!--<li class="list-group-item"><h2>{{ entry.title }}</h2>{{ entry.text|safe }}</li>-->
+        <!--{% else %}-->
+            <!--<li class="list-group-item"><em>Unnelievable. No entries here so far</em></li>-->
+        <!--{% endfor %}-->
+    <!--</ul>-->
+
+{% endblock %}

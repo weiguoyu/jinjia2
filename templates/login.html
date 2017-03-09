@@ -1,0 +1,16 @@
+{% extends "layout.html" %}
+{% block body %}
+    <h2>Login</h2>
+    {% if error %}<p class="error"><strong>Error:</strong>{{error}}</p>{% endif %}
+    <form role="form-group" action="{{ url_for('article.login') }}" method="post">
+        <div class="form-group">
+            <label for="user">用户名</label>
+            <input type="text" class="form-control" id="user" name="username" placeholder="请输入名称">
+        </div>
+        <div class="form-group">
+            <label for="passwd">密码</label>
+            <input type="password" class="form-control" id="passwd" name="password">
+        </div>
+        <button type="submit" class="btn btn-default">Login</button>
+    </form>
+{% endblock %}

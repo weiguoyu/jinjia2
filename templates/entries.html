@@ -1,0 +1,18 @@
+<div class="page_foot">
+    <ul class="list-group">
+        {% for article in result.articles %}
+            <li class="list-group-item"><h2>{{ article.title }}</h2>{{ article.text }}</li>
+        {% else %}
+            <li class="list-group-item"><em>Unnelievable. No entries here so far</em></li>
+        {% endfor %}
+    </ul>
+    <ul class="pager">
+        <li><a href="#" id="prev" onclick="prev()">上一页</a></li>
+        <li><a href="#" id="next" onclick="next()">下一页</a></li>
+        <div class="page_count">
+            <span>第<span id="page_no">{{ result.page_no }}</span>页</span>
+            <span>/</span>
+            <span>共 <span id="count">{{ result.count }}</span>条</span>
+        </div>
+    </ul>
+</div>

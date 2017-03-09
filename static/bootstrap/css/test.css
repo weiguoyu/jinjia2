@@ -1,0 +1,6 @@
+
+.test_display {
+  position: relative;
+  top: 1px;
+  display: inline-block;
+}
