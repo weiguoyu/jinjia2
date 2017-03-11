@@ -22,6 +22,8 @@ from webargs.flaskparser import (
 from webargs import fields
 from settings import config
 
+from async_tasks import add_log
+
 
 args_parser = FlaskParser()
 article_blueprint = Blueprint('article', __name__)
@@ -41,6 +43,8 @@ def add_entry():
         title=request.form['title'],
         text=request.form['text']
     )
+    add_log.delay("New entry {0} was successfully posted".\
+                  format(request.form['title']))
     flash('New entry was successfully posted')
     return redirect(url_for('article.show_entries'))
 

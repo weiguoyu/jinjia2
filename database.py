@@ -53,5 +53,22 @@ class Entries(Base):
         return query.first()[0]
 
 
+class Logs(Base):
+    __tablename__ = 'logs'
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    remark = Column(String(50), nullable=False, default="")
+
+    @classmethod
+    def add(cls, remark=None):
+        log = cls(
+            remark=remark,
+        )
+        session = db_session()
+        session.add(log)
+        session.commit()
+        return log
+
+
 def init_db():
+    Base.metadata.drop_all(bind=engine)
     Base.metadata.create_all(bind=engine)
