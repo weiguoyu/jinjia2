@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>jinjia2</title>
+    <link rel="stylesheet" type="text/css" href="static/bootstrap/css/bootstrap.css">
+    <link rel="stylesheet" type="text/css" href="static/style.css">
+    <script src="static/jquery/jquery.js"></script>
+    <script src="static/myscript.js"></script>
+</head>
+<body>
+    <div class="page">
+        <h1>jinjia2</h1>
+        <div class="metanav">
+        </div>
+
+        <div id="login">
+            <h2>Login</h2>
+            <form role="form-group" action="/api/login" method="post">
+                <div class="form-group">
+                    <label for="user">用户名</label>
+                    <input type="text" class="form-control" id="user" name="username" placeholder="请输入名称">
+                </div>
+                <div class="form-group">
+                    <label for="passwd">密码</label>
+                    <input type="password" class="form-control" id="passwd" name="password">
+                </div>
+                <a class="btn btn-default" onclick="login()">Login</a>
+            </form>
+        </div>
+
+        <div class="data">
+            <button id="data" type="button" class="btn btn-default">展开/收缩</button>
+        </div>
+    </div>
+
+</body>
+</html>

@@ -15,10 +15,16 @@ $(document).ready(function(){
                 page_size: page_size
             }),
             processData: false,
-            dataType: 'html',
+            dataType: 'json',
             success: function(data, textStatus) {
                 var page = $('div.page');
-                page.append(data);
+                var ul_list = $('ul.list-group');
+                ul_list.remove();
+                if (data.result.count === 0) {
+                    page.append('<ul class="list-group"><li class="list-group-item"><em>Unnelievable. No entries here so far</em></li></ul>')
+                } else {
+
+                }
             },
             error: function(xhr, textStatus, errorThrown) {
                 alert("error code: " + xhr.status + "status: " + textStatus + "error: "+ errorThrown);
@@ -29,6 +35,25 @@ $(document).ready(function(){
         })
         }
     });
+
+    // 判断是否登陆
+    $.ajax({
+            url: '/api/is_login',
+            method: 'GET',
+            dataType: 'json',
+            success: function(data){
+                var metanav = $('div.metanav');
+                if (data.result === true){
+                    metanav.append('<a href="/api/logout">log out</a>')
+                } else {
+                    metanav.append('<a href="/api/login">log in</a>')
+                }
+            },
+            error: function(xhr, textStatus, errorThrown) {
+                alert("error code: " + xhr.status + "status: " + textStatus + "error: "+ errorThrown);
+            }
+        }
+    );
 });
 
 
@@ -91,3 +116,8 @@ function next() {
             },
         })
     }
+
+function login() {
+    $('form[role="form-group"]').submit();
+    debugger;
+}

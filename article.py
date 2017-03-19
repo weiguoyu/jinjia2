@@ -6,7 +6,6 @@ from flask import (
     redirect,
     url_for,
     abort,
-    render_template,
     flash,
     Blueprint
 )
@@ -22,56 +21,67 @@ from webargs.flaskparser import (
 from webargs import fields
 from settings import config
 
-from async_tasks import add_log
+from utils import (
+    to_resp,
+    error_resp
+)
 
+from schema import EntrySchema
 
 args_parser = FlaskParser()
-article_blueprint = Blueprint('article', __name__)
+article_blueprint = Blueprint('article', __name__, url_prefix='/api')
 
 
 @article_blueprint.route('/')
 def show_entries():
     entries = Entries.get(0, 0)
-    return render_template('show_entries.html', entries=entries)
+    datas = EntrySchema(many=True).dump(entries).data
+    return to_resp(datas)
 
 
 @article_blueprint.route('/add', methods=['POST'])
 def add_entry():
     if not session.get('logged_in'):
         abort(401)
+    params = args_parser.parse({
+        'title': fields.Field(),
+        'text': fields.Field()
+    })
     Entries.add(
-        title=request.form['title'],
-        text=request.form['text']
+        title=params['title'],
+        text=params['text']
     )
-    add_log.delay("New entry {0} was successfully posted".\
-                  format(request.form['title']))
-    flash('New entry was successfully posted')
     return redirect(url_for('article.show_entries'))
 
 
 @article_blueprint.route('/login', methods=['GET', 'POST'])
 def login():
-    error = None
-    if request.method == 'POST':
-        if request.form['username'] != config['USERNAME']:
-            error = 'Invalid username'
-        elif request.form['password'] != config['PASSWORD']:
-            error = 'Invalid password'
-        else:
-            session['logged_in'] = True
-            flash('You were logged in')
-            return redirect(url_for('article.show_entries'))
-    return render_template('login.html', error=error)
+    error = u"登陆异常"
+    params = args_parser.parse({
+        'username': fields.Field(),
+        'password': fields.Field()
+    })
+    if params['username'] != config['USERNAME']:
+        error = 'Invalid username'
+    elif params['password'] != config['PASSWORD']:
+        error = 'Invalid password'
+    else:
+        session['logged_in'] = True
+        return redirect(url_for('article.show_entries'))
+    return error_resp(error, 200, is_status_code=True)
 
+@article_blueprint.route('/is_login', methods=['GET'])
+def is_login():
+    is_login = session.get('logged_in', False)
+    return to_resp(is_login)
 
 @article_blueprint.route('/logout')
 def logout():
     session.pop('logged_in', None)
-    flash('You were logged out')
     return redirect(url_for('article.show_entries'))
 
 
-@article_blueprint.route('/api/articles', methods=['POST'])
+@article_blueprint.route('/articles', methods=['POST'])
 def get_articles():
     params = args_parser.parse({
         'page_no': fields.Field(),
@@ -83,17 +93,12 @@ def get_articles():
     limit = page_size
     entries = Entries.get(offset, limit)
     count = Entries.get_num()
-    articles = []
-    for entrie in entries:
-        articles.append(dict(
-            title=entrie.title,
-            text=entrie.text
-        ))
+    articles = EntrySchema(many=True).dump(entries).data
     result = {
         "count": count,
         "page_no": page_no,
         "page_size": page_size,
         "articles": articles
     }
-    return render_template('entries.html', result=result)
+    return to_resp(result)
 
